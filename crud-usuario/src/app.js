@@ -5,9 +5,9 @@ const app = express()
 
 const userDB = [{
     "id": 1,
-    "name": "Diego",
+    "name": "Juan Pablo",
     "age": 20,
-    "email": "diego@gmail.com",
+    "email": "jp@gmail.com",
     "country": "Colombia",
     "phone": "30020"
 }]
@@ -40,23 +40,23 @@ app.get('/users/:id', (req, res) => {
     const id = Number(req.params.id)
     const filteredDb = userDB.filter(item => item.id === id)
 
-    if(filteredDb.length > 0){
+    if (filteredDb.length > 0) {
         res.status(200).json(filteredDb[0])
-    }else{
-        res.status(400).json({message: "ID not valid"})
+    } else {
+        res.status(400).json({ message: "ID not valid" })
     }
-    
+
 })
 
-app.post('/users', (req, res) =>{
+app.post('/users', (req, res) => {
     const data = req.body
-    if(userDB.length === 0){
+    if (userDB.length === 0) {
         const neUser = {
             id: 1,
             ...data
         }
         userDB.push(newUser)
-    }else {
+    } else {
         const newUser = {
             id: userDB[userDB.length - 1].id + 1,
             ...data
@@ -64,6 +64,41 @@ app.post('/users', (req, res) =>{
         userDB.push(newUser)
     }
     res.status(201).json(userDB)
+})
+
+app.delete('/users/:id', (req, res) => {
+    const id = Number(req.params.id)
+    const index = userDB.findIndex(item => item.id === id)
+    console.log(index)
+    if (index !== -1) {
+        userDB.splice(index, 1)
+        res.status(204).json()
+    } else {
+        res.status(400).json({ message: 'Invalid ID' })
+        return 'Hola'
+
+    }
+
+})
+
+app.put('/users/:id', (req, res) => {
+    const id = Number(req.params.id)
+    const data = req.body
+    const index = userDB.findIndex(item => item.id === id)
+    if (data.name && data.age && data.email && data.country && data.phone) {
+        userDB[index] = {
+            id,
+            name: data.name,
+            age: data.age,
+            email: data.email,
+            country: data.country,
+            phone: data.phone
+        }
+        res.status(200).json(userDB)
+
+    } else {
+        res.status(400).json({message: 'Missing data'})
+    }
 })
 
 app.listen(8000, () => {
